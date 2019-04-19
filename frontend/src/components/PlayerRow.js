@@ -45,6 +45,19 @@ class PlayerRow extends Component {
     };
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.players !== prevProps.players) {
+      this.setState({
+        allPlayers: this.props.players.map(player => {
+          return {
+            key: player.personId,
+            text: player.name + " - " + player.position,
+            value: player.personId
+          };
+        })
+      });
+    }
+  }
   handleSearchChange = (e, { searchQuery }) => {
     this.setState({ player: searchQuery });
   };
@@ -108,15 +121,7 @@ class PlayerRow extends Component {
       blk,
       tov
     } = this.state;
-    const options = this.props.players
-      ? this.props.players.map(player => {
-          return {
-            key: player.personId,
-            text: player.name + " - " + player.position,
-            value: player.personId
-          };
-        })
-      : [];
+
     return (
       <Table.Body>
         <Table.Row>
@@ -127,7 +132,7 @@ class PlayerRow extends Component {
               placeholder="Select Player"
               search
               selection
-              options={options}
+              options={this.state.allPlayers}
               value={playerId}
             />
           </Table.Cell>
