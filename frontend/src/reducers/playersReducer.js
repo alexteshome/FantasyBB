@@ -7,9 +7,9 @@ export default function(state = {}, action) {
         ...state,
         players: action.payload.map(player => {
           return {
-            key: player.personId,
-            text: player.firstName + " " + player.lastName,
-            value: player.personId
+            personId: player.personId,
+            name: player.firstName + " " + player.lastName,
+            position: player.pos
           };
         })
       };
