@@ -4,6 +4,7 @@ import {
   Container,
   Divider,
   Dropdown,
+  Form,
   Grid,
   Header,
   Icon,
@@ -11,6 +12,7 @@ import {
   Item,
   List,
   Menu,
+  Message,
   Popup,
   Responsive,
   Search,
@@ -23,15 +25,18 @@ import { getPlayers } from "../actions/players";
 import { connect } from "react-redux";
 import NBA from "nba";
 import PlayerRow from "./PlayerRow";
+import axios from "axios";
 
 class NewTeam extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      teamName: "",
       slots: 0,
-      players: { 1: 0 },
+      players: [],
       rows: []
     };
+    this.handleChange = this.handleChange.bind(this);
     this.handleAddSlot = this.handleAddSlot.bind(this);
     this.saveTeam = this.saveTeam.bind(this);
     this.addPlayer = this.addPlayer.bind(this);
@@ -40,18 +45,6 @@ class NewTeam extends Component {
 
   componentDidMount() {
     this.props.getPlayers();
-    this.setState({
-      slots: this.state.slots + 1,
-      rows: [
-        ...this.state.rows,
-        <PlayerRow
-          key={this.state.slots + 1}
-          row={this.state.slots + 1}
-          selectedPlayer={this.addPlayer}
-          handleDeleteSlot={this.deleteSlot}
-        />
-      ]
-    });
   }
   handleAddSlot(e) {
     e.preventDefault();
@@ -69,11 +62,24 @@ class NewTeam extends Component {
     });
   }
   saveTeam(e) {
-    console.log(this.state.players);
+    console.log(this.state.teamName);
+    axios.get("/api/users/me").then(res => {
+      axios
+        .post("/api/teams/", {
+          userId: res.data.id,
+          name: this.state.teamName,
+          players: this.state.players
+        })
+        .then(
+          console.log
+          //window.location.reload()
+        )
+        .catch(res => this.setState({ saved: false }));
+    });
   }
   addPlayer(key, playerId) {
     this.setState({
-      players: { [key]: playerId }
+      players: [...this.state.players, playerId]
     });
   }
   deleteSlot(key) {
@@ -83,7 +89,11 @@ class NewTeam extends Component {
       rows: this.state.rows.filter(row => parseInt(row.key) !== key)
     });
   }
+
+  handleChange = (e, { value }) => this.setState({ teamName: value });
+
   render() {
+    const { rows, teamName } = this.state;
     return (
       <Container>
         <br />
@@ -136,7 +146,7 @@ class NewTeam extends Component {
               <Table.HeaderCell collapsing />
             </Table.Row>
           </Table.Header>
-          {this.state.rows}
+          {rows}
           <Table.Footer fullWidth>
             <Table.Row textAlign="left">
               <Table.HeaderCell verticalAlign="middle" colSpan="13">
@@ -152,9 +162,17 @@ class NewTeam extends Component {
             </Table.Row>
           </Table.Footer>
         </Table>
-        <Button primary onClick={this.saveTeam}>
-          Save Team
-        </Button>
+        <Form onSubmit={this.saveTeam}>
+          <Form.Group>
+            <Form.Input
+              placeholder="Enter a team name"
+              value={teamName}
+              required
+              onChange={this.handleChange}
+            />
+            <Button primary>Save Team</Button>
+          </Form.Group>
+        </Form>
       </Container>
     );
   }

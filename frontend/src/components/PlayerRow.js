@@ -30,6 +30,16 @@ class PlayerRow extends Component {
 
   get initialState() {
     return {
+      allPlayers: this.props.players
+        ? this.props.players.map(player => {
+            return {
+              key: player.personId,
+              text: player.name + " - " + player.position,
+              value: player.personId
+            };
+          })
+        : [],
+      player: "",
       playerId: 0,
       team: "-",
       gp: "-",
@@ -45,30 +55,18 @@ class PlayerRow extends Component {
     };
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.players !== prevProps.players) {
-      this.setState({
-        allPlayers: this.props.players.map(player => {
-          return {
-            key: player.personId,
-            text: player.name + " - " + player.position,
-            value: player.personId
-          };
-        })
-      });
-    }
-  }
   handleSearchChange = (e, { searchQuery }) => {
     this.setState({ player: searchQuery });
   };
-  handleChange = (e, { value }) => {
+  handleChange = (e, { value, ...props }) => {
     if (!value) {
       this.setState(this.initialState);
       return;
     }
     this.props.selectedPlayer(this.props.row, value);
-    console.log(this.props.row, value);
+    console.log(this.props.row, props);
     NBA.stats.playerProfile({ PlayerID: value }).then(player => {
+      console.log(this.props.row, value);
       const playerTotalStats = player.seasonTotalsRegularSeason;
       const playerLatestStats = playerTotalStats.pop();
       let {
@@ -109,6 +107,7 @@ class PlayerRow extends Component {
   render() {
     const {
       playerId,
+      player,
       team,
       gp,
       min,
@@ -119,9 +118,10 @@ class PlayerRow extends Component {
       ast,
       stl,
       blk,
-      tov
+      tov,
+      allPlayers
     } = this.state;
-
+    console.log(allPlayers);
     return (
       <Table.Body>
         <Table.Row>
@@ -132,7 +132,7 @@ class PlayerRow extends Component {
               placeholder="Select Player"
               search
               selection
-              options={this.state.allPlayers}
+              options={player.length > 2 ? allPlayers : []}
               value={playerId}
             />
           </Table.Cell>
@@ -148,19 +148,15 @@ class PlayerRow extends Component {
           <Table.Cell verticalAlign="middle">{blk}</Table.Cell>
           <Table.Cell verticalAlign="middle">{tov}</Table.Cell>
           <Table.Cell verticalAlign="middle">
-            {this.props.row !== 1 ? (
-              <Icon
-                name="close"
-                color="red"
-                circular
-                onClick={e => {
-                  e.preventDefault();
-                  this.props.handleDeleteSlot(this.props.row);
-                }}
-              />
-            ) : (
-              ""
-            )}
+            <Icon
+              name="close"
+              color="red"
+              circular
+              onClick={e => {
+                e.preventDefault();
+                this.props.handleDeleteSlot(this.props.row);
+              }}
+            />
           </Table.Cell>
         </Table.Row>
       </Table.Body>
