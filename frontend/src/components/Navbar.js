@@ -51,19 +51,26 @@ class Navbar extends Component {
       </div>
     );
     return (
-      <Segment
-        inverted
-        textAlign="center"
-        style={{ padding: ".5em .5em" }}
-        vertical
-      >
+      <Segment inverted style={{ padding: "0 0" }} vertical>
         <Container>
-          <Menu inverted secondary size="huge">
-            <Menu.Item header>
-              <Link to="/" style={{ textDecoration: "none" }}>
-                FantasyAT
-              </Link>
+          <Menu inverted size="huge">
+            <Menu.Item as={Link} to="/" header>
+              FantasyAT
             </Menu.Item>
+            {isAuthenticated ? (
+              <Menu.Item as={Link} to="/teamlist" header>
+                Team List
+              </Menu.Item>
+            ) : (
+              ""
+            )}
+            {isAuthenticated ? (
+              <Menu.Item as={Link} to="/newteam">
+                New Team
+              </Menu.Item>
+            ) : (
+              ""
+            )}
             {isAuthenticated ? (
               <Menu.Item onClick={this.onLogout.bind(this)} position="right">
                 Logout

@@ -64,9 +64,7 @@ class PlayerRow extends Component {
       return;
     }
     this.props.selectedPlayer(this.props.row, value);
-    console.log(this.props.row, props);
     NBA.stats.playerProfile({ PlayerID: value }).then(player => {
-      console.log(this.props.row, value);
       const playerTotalStats = player.seasonTotalsRegularSeason;
       const playerLatestStats = playerTotalStats.pop();
       let {
@@ -121,7 +119,6 @@ class PlayerRow extends Component {
       tov,
       allPlayers
     } = this.state;
-    console.log(allPlayers);
     return (
       <Table.Body>
         <Table.Row>

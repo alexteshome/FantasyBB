@@ -36,11 +36,14 @@ router.get("/", (req, res) => {
     });
 });
 router.post("/", (req, res) => {
-  Team.findOne({ name: req.body.name })
+  Team.findOne({ name: req.body.name, userId: req.body.userId })
     .then(team => {
       if (team) {
         return res.status(400).json({
-          message: "Team name already exists"
+          message: {
+            header: "Team could not be saved",
+            content: "Team name already exists"
+          }
         });
       } else {
         const newTeam = new Team({
@@ -52,7 +55,48 @@ router.post("/", (req, res) => {
         newTeam
           .save()
           .then(registeredTeam => {
-            res.json(registeredTeam);
+            res.json({
+              ...registeredTeam,
+              message: {
+                header: "Team has been saved",
+                content: 'Check your new team in the "Teams" tab'
+              }
+            });
+          })
+          .catch(err => {
+            res.status(500).json({
+              message: {
+                header: "Team could not be saved",
+                content: err
+              }
+            });
+          });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: {
+          header: "Team could not be saved",
+          content: err
+        }
+      });
+    });
+});
+
+router.delete("/:teamId", (req, res) => {
+  const id = req.params.teamId;
+  Team.findOne({ name: req.body.name, userId: req.body.userId })
+    .then(team => {
+      if (!team) {
+        return res.status(400).json({
+          message: "Team does not exist"
+        });
+      } else {
+        Team.remove({ _id: id })
+          .then(() => {
+            res.status(200).json({
+              message: "Team Deleted"
+            });
           })
           .catch(err => {
             res.status(500).json({
@@ -68,12 +112,13 @@ router.post("/", (req, res) => {
     });
 });
 
-router.delete("/:teamId", (req, res) => {
-  const id = req.params.teamId;
-  Team.remove({ _id: id }) // Remove any object that fulfills this criteria
+router.delete("/all/:userId", (req, res) => {
+  const id = req.params.userId;
+
+  Team.remove({ userId: id })
     .then(() => {
       res.status(200).json({
-        message: "Team Deleted"
+        message: "All user's teams deleted"
       });
     })
     .catch(err => {

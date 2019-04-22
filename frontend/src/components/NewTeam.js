@@ -3,27 +3,19 @@ import {
   Button,
   Container,
   Divider,
-  Dropdown,
   Form,
-  Grid,
   Header,
   Icon,
-  Image,
-  Item,
-  List,
-  Menu,
   Message,
   Popup,
   Responsive,
   Search,
   Segment,
   Sidebar,
-  Table,
-  Visibility
+  Table
 } from "semantic-ui-react";
 import { getPlayers } from "../actions/players";
 import { connect } from "react-redux";
-import NBA from "nba";
 import PlayerRow from "./PlayerRow";
 import axios from "axios";
 
@@ -31,6 +23,7 @@ class NewTeam extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      saved: "typing",
       teamName: "",
       slots: 0,
       players: [],
@@ -62,42 +55,59 @@ class NewTeam extends Component {
     });
   }
   saveTeam(e) {
-    console.log(this.state.teamName);
-    axios.get("/api/users/me").then(res => {
+    const { teamName, players } = this.state;
+    if (players.length == 0) {
+      this.setState({
+        saved: "error",
+        message: {
+          header: "Team could not be saved",
+          content: "Add players before saving the team"
+        }
+      });
+    } else {
       axios
         .post("/api/teams/", {
-          userId: res.data.id,
-          name: this.state.teamName,
-          players: this.state.players
+          userId: this.props.user.id,
+          name: teamName,
+          players: players
         })
-        .then(
-          console.log
-          //window.location.reload()
-        )
-        .catch(res => this.setState({ saved: false }));
-    });
+        .then(res => {
+          this.setState({
+            saved: "saved",
+            message: res.data.message,
+            teamName: "",
+            slots: 0,
+            players: [],
+            rows: []
+          });
+        })
+        .catch(err => {
+          this.setState({ saved: "error", message: err.response.data.message });
+        });
+    }
   }
+
   addPlayer(key, playerId) {
     this.setState({
       players: [...this.state.players, playerId]
     });
   }
   deleteSlot(key) {
-    console.log(this.state);
-    console.log(key);
     this.setState({
       rows: this.state.rows.filter(row => parseInt(row.key) !== key)
     });
   }
 
-  handleChange = (e, { value }) => this.setState({ teamName: value });
+  handleChange = (e, { value }) =>
+    this.setState({ saved: "typing", teamName: value });
 
   render() {
-    const { rows, teamName } = this.state;
+    const { rows, teamName, saved, message } = this.state;
     return (
       <Container>
         <br />
         <Header>Add your fantasy team</Header>
+        <Divider />
         <Table celled compact definition textAlign="center">
           <Table.Header fullWidth>
             <Table.Row>
@@ -150,35 +160,58 @@ class NewTeam extends Component {
           <Table.Footer fullWidth>
             <Table.Row textAlign="left">
               <Table.HeaderCell verticalAlign="middle" colSpan="13">
-                <a
-                  href="#"
-                  style={{ textDecoration: "none" }}
+                <Button
+                  style={{
+                    background: "none",
+                    border: "none",
+                    margin: 0,
+                    padding: 0,
+                    cursor: "pointer",
+                    color: "blue"
+                  }}
                   onClick={this.handleAddSlot}
                 >
                   <Icon name="add" />
                   Add Player
-                </a>
+                </Button>
               </Table.HeaderCell>
             </Table.Row>
           </Table.Footer>
         </Table>
-        <Form onSubmit={this.saveTeam}>
-          <Form.Group>
-            <Form.Input
-              placeholder="Enter a team name"
-              value={teamName}
-              required
-              onChange={this.handleChange}
+        <Form
+          success={saved === "saved"}
+          error={saved === "error"}
+          onSubmit={this.saveTeam}
+        >
+          <Form.Input
+            placeholder="Enter a team name"
+            value={teamName}
+            required
+            onChange={this.handleChange}
+          />
+          {saved === "typing" ? (
+            ""
+          ) : (
+            <Message
+              success={saved === "saved"}
+              error={saved === "error"}
+              header={message.header}
+              content={message.content}
             />
-            <Button primary>Save Team</Button>
-          </Form.Group>
+          )}
+          <Button primary>Save Team</Button>
         </Form>
       </Container>
     );
   }
 }
-
+const mapStateToProps = state => {
+  return {
+    user: state.auth.user,
+    isAuthenticated: state.auth.isAuthenticated
+  };
+};
 export default connect(
-  null,
+  mapStateToProps,
   { getPlayers }
 )(NewTeam);
