@@ -27,20 +27,27 @@ class NewTeam extends Component {
       teamName: "",
       slots: 0,
       players: [],
-      rows: []
+      rows: [],
+      totalFantasyPts: 0
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleAddSlot = this.handleAddSlot.bind(this);
     this.saveTeam = this.saveTeam.bind(this);
     this.addPlayer = this.addPlayer.bind(this);
-    this.deleteSlot = this.deleteSlot.bind(this);
+    this.deletePlayer = this.deletePlayer.bind(this);
+  }
+  componentDidMount() {
+    this.handleAddSlot();
+  }
+  componentDidUpdate() {
+    if (this.state.rows.length === 0) {
+      this.setState({ totalFantasyPts: 0 });
+      this.handleAddSlot();
+    }
   }
 
-  componentDidMount() {
-    this.props.getPlayers();
-  }
   handleAddSlot(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     this.setState({
       slots: this.state.slots + 1,
       rows: [
@@ -48,8 +55,9 @@ class NewTeam extends Component {
         <PlayerRow
           key={this.state.slots + 1}
           row={this.state.slots + 1}
+          numRows={this.state.rows.length}
           selectedPlayer={this.addPlayer}
-          handleDeleteSlot={this.deleteSlot}
+          handleDeletePlayer={this.deletePlayer}
         />
       ]
     });
@@ -87,14 +95,24 @@ class NewTeam extends Component {
     }
   }
 
-  addPlayer(key, playerId) {
+  addPlayer(playerId, player, fantasyPts) {
+    console.log(player);
     this.setState({
-      players: [...this.state.players, playerId]
+      players: [
+        ...this.state.players,
+        {
+          _id: playerId,
+          name: player
+        }
+      ],
+      totalFantasyPts: this.state.totalFantasyPts + fantasyPts
     });
   }
-  deleteSlot(key) {
+  deletePlayer(playerId, key, fantasyPts) {
     this.setState({
-      rows: this.state.rows.filter(row => parseInt(row.key) !== key)
+      players: this.state.players.filter(player => player._id !== playerId),
+      rows: this.state.rows.filter(row => parseInt(row.key) !== key),
+      totalFantasyPts: this.state.totalFantasyPts - fantasyPts
     });
   }
 
@@ -102,13 +120,14 @@ class NewTeam extends Component {
     this.setState({ saved: "typing", teamName: value });
 
   render() {
-    const { rows, teamName, saved, message } = this.state;
+    const { rows, teamName, saved, message, totalFantasyPts } = this.state;
+    console.log(this.state.players);
     return (
       <Container>
         <br />
         <Header>Add your fantasy team</Header>
         <Divider />
-        <Table celled compact definition textAlign="center">
+        <Table celled compact definition sortable textAlign="center">
           <Table.Header fullWidth>
             <Table.Row>
               <Table.HeaderCell collapsing>Player</Table.HeaderCell>
@@ -118,20 +137,28 @@ class NewTeam extends Component {
                 content="Games Played"
               />
               <Popup
-                trigger={<Table.HeaderCell>MP</Table.HeaderCell>}
+                trigger={<Table.HeaderCell>MIN</Table.HeaderCell>}
                 content="Minutes Played Per Game"
+              />
+              <Popup
+                trigger={<Table.HeaderCell>PTS</Table.HeaderCell>}
+                content="Points Per Game"
               />
               <Popup
                 trigger={<Table.HeaderCell>FG%</Table.HeaderCell>}
                 content="Field Goal Percentage"
               />
               <Popup
-                trigger={<Table.HeaderCell>FT%</Table.HeaderCell>}
-                content="Free Throw Percentage"
+                trigger={<Table.HeaderCell>FG3M</Table.HeaderCell>}
+                content="Three Point Field Goals Made Per Game "
               />
               <Popup
-                trigger={<Table.HeaderCell>PTS</Table.HeaderCell>}
-                content="Points Per Game"
+                trigger={<Table.HeaderCell>FG3%</Table.HeaderCell>}
+                content="Three Point Field Goal Percentage"
+              />
+              <Popup
+                trigger={<Table.HeaderCell>FT%</Table.HeaderCell>}
+                content="Free Throw Percentage"
               />
               <Popup
                 trigger={<Table.HeaderCell>REB</Table.HeaderCell>}
@@ -153,13 +180,17 @@ class NewTeam extends Component {
                 trigger={<Table.HeaderCell>TOV</Table.HeaderCell>}
                 content="Turnovers Per Game"
               />
+              <Popup
+                trigger={<Table.HeaderCell>FPTS</Table.HeaderCell>}
+                content="NBA Fantasy Points"
+              />
               <Table.HeaderCell collapsing />
             </Table.Row>
           </Table.Header>
           {rows}
           <Table.Footer fullWidth>
             <Table.Row textAlign="left">
-              <Table.HeaderCell verticalAlign="middle" colSpan="13">
+              <Table.HeaderCell colSpan="14">
                 <Button
                   style={{
                     background: "none",
@@ -175,6 +206,10 @@ class NewTeam extends Component {
                   Add Player
                 </Button>
               </Table.HeaderCell>
+              <Table.HeaderCell style={{ textAlign: "center" }}>
+                {totalFantasyPts === 0 ? 0 : totalFantasyPts.toFixed(1)}
+              </Table.HeaderCell>
+              <Table.HeaderCell />
             </Table.Row>
           </Table.Footer>
         </Table>
@@ -208,7 +243,8 @@ class NewTeam extends Component {
 const mapStateToProps = state => {
   return {
     user: state.auth.user,
-    isAuthenticated: state.auth.isAuthenticated
+    isAuthenticated: state.auth.isAuthenticated,
+    players: state.players.players
   };
 };
 export default connect(

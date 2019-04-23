@@ -4,17 +4,17 @@ const mongoose = require("mongoose");
 
 const Team = require("../models/Team");
 
-router.get("/:teamId", (req, res) => {
-  const id = req.params.teamId;
-  Team.findById(id)
-    .then(team => {
-      if (team) {
-        res.status(200).json({
-          team
+router.get("/:userId", (req, res) => {
+  const id = req.params.userId;
+  Team.find({ userId: id })
+    .then(teams => {
+      if (teams) {
+        res.json({
+          teams
         });
       } else {
         res.status(404).json({
-          message: "No valid entry found for provided ID"
+          message: "No valid entry found for provided user ID"
         });
       }
     })

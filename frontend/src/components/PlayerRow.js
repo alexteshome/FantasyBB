@@ -1,25 +1,8 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
-import {
-  Button,
-  Container,
-  Divider,
-  Dropdown,
-  Grid,
-  Header,
-  Icon,
-  Image,
-  List,
-  Menu,
-  Responsive,
-  Search,
-  Segment,
-  Sidebar,
-  Table,
-  Visibility
-} from "semantic-ui-react";
+import { Icon, Search, Table } from "semantic-ui-react";
 import { connect } from "react-redux";
-import NBA from "nba";
+import _ from "lodash";
 
 class PlayerRow extends Component {
   constructor(props) {
@@ -27,133 +10,144 @@ class PlayerRow extends Component {
 
     this.state = this.initialState;
   }
-
   get initialState() {
     return {
-      allPlayers: this.props.players
-        ? this.props.players.map(player => {
-            return {
-              key: player.personId,
-              text: player.name + " - " + player.position,
-              value: player.personId
-            };
-          })
-        : [],
-      player: "",
       playerId: 0,
       team: "-",
       gp: "-",
       min: "-",
       fgPct: "-",
       ftPct: "-",
+      fg3Pct: "-",
+      fG3M: "-",
       pts: "-",
       reb: "-",
       ast: "-",
       stl: "-",
       blk: "-",
-      tov: "-"
+      tov: "-",
+      fantasyPts: 0
     };
   }
+  componentWillMount() {
+    this.resetComponent();
+  }
+  resetComponent = () =>
+    this.setState({ isLoading: false, results: [], value: "" });
 
-  handleSearchChange = (e, { searchQuery }) => {
-    this.setState({ player: searchQuery });
-  };
-  handleChange = (e, { value, ...props }) => {
-    if (!value) {
-      this.setState(this.initialState);
+  handleSearchChange = (e, { value }) => {
+    if (value.length < 3) {
+      this.setState({ value });
       return;
     }
-    this.props.selectedPlayer(this.props.row, value);
-    NBA.stats.playerProfile({ PlayerID: value }).then(player => {
-      const playerTotalStats = player.seasonTotalsRegularSeason;
-      const playerLatestStats = playerTotalStats.pop();
-      let {
-        teamAbbreviation,
-        gp,
-        min,
-        fgPct,
-        ftPct,
-        pts,
-        reb,
-        ast,
-        stl,
-        blk,
-        tov
-      } = playerLatestStats;
-      if (teamAbbreviation === "TOT") {
-        const playerStats = playerTotalStats.pop();
-        teamAbbreviation = playerStats.teamAbbreviation;
-      }
+    if (this.state.fantasyPts !== "-") {
+      this.props.handleDeletePlayer(
+        this.props.row,
+        this.state.fantasyPts,
+        false
+      );
+      this.state = this.initialState;
+    }
+    this.setState({ isLoading: true, value });
+
+    setTimeout(() => {
+      if (this.state.value.length < 1) return this.resetComponent();
+
+      const re = new RegExp(_.escapeRegExp(this.state.value), "i");
+      const isMatch = result => re.test(result.name);
 
       this.setState({
-        playerId: value,
-        team: teamAbbreviation,
-        gp,
-        min,
-        fgPct,
-        ftPct,
-        pts,
-        reb,
-        ast,
-        stl,
-        blk,
-        tov
+        isLoading: false,
+        results: _.filter(this.props.players, isMatch)
       });
+    }, 300);
+  };
+  handleResultSelect = (e, { result }) => {
+    this.props.selectedPlayer(result.id, result.name, result.stats.fantasyPts);
+
+    this.setState({
+      playerId: result.id,
+      team: result.team,
+      ...result.stats,
+      value: result.name,
+      selected: true
     });
   };
 
   render() {
     const {
       playerId,
-      player,
       team,
       gp,
       min,
-      fgPct,
-      ftPct,
       pts,
+      fgPct,
+      fg3Pct,
+      fG3M,
+      ftPct,
       reb,
       ast,
       stl,
       blk,
       tov,
-      allPlayers
+      fantasyPts,
+      isLoading,
+      results,
+      value,
+      selected
     } = this.state;
     return (
       <Table.Body>
         <Table.Row>
-          <Table.Cell>
-            <Dropdown
-              onSearchChange={this.handleSearchChange}
-              onChange={this.handleChange}
-              placeholder="Select Player"
-              search
-              selection
-              options={player.length > 2 ? allPlayers : []}
-              value={playerId}
-            />
+          <Table.Cell verticalAlign="middle" singleLine>
+            {selected ? (
+              value
+            ) : (
+              <Search
+                loading={isLoading}
+                onResultSelect={this.handleResultSelect}
+                onSearchChange={_.debounce(this.handleSearchChange, 500, {
+                  leading: true
+                })}
+                results={value.length < 3 ? [] : results}
+                value={value}
+                placeholder="Select Player"
+              />
+            )}
           </Table.Cell>
           <Table.Cell verticalAlign="middle">{team}</Table.Cell>
           <Table.Cell verticalAlign="middle">{gp}</Table.Cell>
           <Table.Cell verticalAlign="middle">{min}</Table.Cell>
-          <Table.Cell verticalAlign="middle">{fgPct}</Table.Cell>
-          <Table.Cell verticalAlign="middle">{ftPct}</Table.Cell>
           <Table.Cell verticalAlign="middle">{pts}</Table.Cell>
+          <Table.Cell verticalAlign="middle">{fgPct}</Table.Cell>
+          <Table.Cell verticalAlign="middle">{fG3M}</Table.Cell>
+          <Table.Cell verticalAlign="middle">{fg3Pct}</Table.Cell>
+          <Table.Cell verticalAlign="middle">{ftPct}</Table.Cell>
           <Table.Cell verticalAlign="middle">{reb}</Table.Cell>
           <Table.Cell verticalAlign="middle">{ast}</Table.Cell>
           <Table.Cell verticalAlign="middle">{stl}</Table.Cell>
           <Table.Cell verticalAlign="middle">{blk}</Table.Cell>
           <Table.Cell verticalAlign="middle">{tov}</Table.Cell>
+          <Table.Cell verticalAlign="middle">{fantasyPts}</Table.Cell>
           <Table.Cell verticalAlign="middle">
             <Icon
               name="close"
               color="red"
-              circular
               onClick={e => {
                 e.preventDefault();
-                this.props.handleDeleteSlot(this.props.row);
+                this.props.handleDeletePlayer(
+                  playerId,
+                  this.props.row,
+                  fantasyPts
+                );
               }}
+              style={
+                this.props.numRows < 1 && !selected
+                  ? { visibility: "hidden" }
+                  : { visbility: "visible" }
+              }
             />
+            {console.log(this.props.numRows)}
           </Table.Cell>
         </Table.Row>
       </Table.Body>
