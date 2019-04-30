@@ -1,6 +1,6 @@
 import { GET_ALL_PLAYERS } from "../actions/types";
 
-export default function(state = {}, action) {
+export default function(state = { players: [] }, action) {
   switch (action.type) {
     case GET_ALL_PLAYERS:
       return {

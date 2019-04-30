@@ -4,21 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../actions/authentication";
 import { withRouter } from "react-router-dom";
-import {
-  Button,
-  Container,
-  Divider,
-  Grid,
-  Header,
-  Icon,
-  Image,
-  List,
-  Menu,
-  Responsive,
-  Segment,
-  Sidebar,
-  Visibility
-} from "semantic-ui-react";
+import { Button, Container, Menu, Segment } from "semantic-ui-react";
 
 class Navbar extends Component {
   onLogout(e) {

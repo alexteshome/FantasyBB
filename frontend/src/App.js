@@ -7,6 +7,7 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import NewTeam from "./components/NewTeam";
 import TeamList from "./components/TeamList";
+import TeamDetails from "./components/TeamDetails";
 import PrivateRoute from "./components/PrivateRoute";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -36,6 +37,12 @@ class App extends Component {
               authenticated={this.props.auth.isAuthenticated}
               path="/teamlist"
               component={TeamList}
+            />
+            <PrivateRoute
+              exact
+              authenticated={this.props.auth.isAuthenticated}
+              path="/teamlist/:teamId"
+              component={TeamDetails}
             />
           </div>
         </div>

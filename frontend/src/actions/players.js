@@ -12,7 +12,6 @@ const fetchPlayers = async () => {
 export const getPlayers = () => dispatch => {
   fetchPlayers()
     .then(res => {
-      console.log(res.leagueDashPlayerStats);
       dispatch({
         type: GET_ALL_PLAYERS,
         payload: res.leagueDashPlayerStats

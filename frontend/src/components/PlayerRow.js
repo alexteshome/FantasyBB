@@ -26,11 +26,17 @@ class PlayerRow extends Component {
       stl: "-",
       blk: "-",
       tov: "-",
-      fantasyPts: 0
+      fantasyPts: 0,
+      isLoading: false,
+      results: [],
+      value: ""
     };
   }
-  componentWillMount() {
+  componentDidMount() {
     this.resetComponent();
+    if (this.searchInputRef.focus) {
+      this.searchInputRef.focus();
+    }
   }
   resetComponent = () =>
     this.setState({ isLoading: false, results: [], value: "" });
@@ -112,6 +118,7 @@ class PlayerRow extends Component {
                 results={value.length < 3 ? [] : results}
                 value={value}
                 placeholder="Select Player"
+                input={{ ref: r => (this.searchInputRef = r) }}
               />
             )}
           </Table.Cell>
@@ -147,7 +154,6 @@ class PlayerRow extends Component {
                   : { visbility: "visible" }
               }
             />
-            {console.log(this.props.numRows)}
           </Table.Cell>
         </Table.Row>
       </Table.Body>
