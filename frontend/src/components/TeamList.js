@@ -15,10 +15,12 @@ import {
   Search,
   Segment,
   Sidebar,
+  Tab,
   Table
 } from "semantic-ui-react";
 import axios from "axios";
 import { connect } from "react-redux";
+import TeamDetails from "./TeamDetails";
 
 class TeamList extends Component {
   constructor(props) {
@@ -78,46 +80,20 @@ class TeamList extends Component {
   handleCancel = () => this.setState({ open: false });
 
   render() {
-    let parts = this.props.match.url.split("/");
-    const urlId = parts.pop() || parts.pop();
-
-    const panels = this.state.teams.map((team, idx) => {
-      const content = (
-        <div>
-          <Table key={idx} celled>
-            <Table.Header fullWidth>
-              <Table.Row>
-                <Table.HeaderCell collapsing>Name</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>{this.renderBodyRow(idx)}</Table.Body>
-          </Table>
-          <Button
-            as={Link}
-            to={`/${urlId}/${encodeURIComponent(team.name)}`}
-            primary
-            content="View"
-            style={{ width: "8.5em" }}
-          />
-          <Button
-            negative
-            content="Delete"
-            onClick={this.show}
-            style={{ width: "8.5em" }}
-          />
-          <Confirm
-            open={this.state.open}
-            onCancel={this.handleCancel}
-            onConfirm={() => this.handleConfirm(team._id)}
-          />
-        </div>
-      );
-      return { key: "panel-" + idx, title: team.name, content: { content } };
+    const panes = this.state.teams.map((team, idx) => {
+      return {
+        menuItem: team.name,
+        render: () => (
+          <Tab.Pane>
+            <TeamDetails key={idx} teamName={team.name} />
+          </Tab.Pane>
+        )
+      };
     });
     return (
-      <Container>
-        <Accordion defaultActiveIndex={0} panels={panels} styled />
-      </Container>
+      <Segment basic attached padded>
+        <Tab menu={{ fluid: true, vertical: true }} panes={panes} />
+      </Segment>
     );
   }
 }

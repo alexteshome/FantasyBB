@@ -11,9 +11,7 @@ class TeamDetails extends Component {
     this.state = { teamName: "", players: [] };
   }
   componentDidMount() {
-    let parts = this.props.match.url.split("/");
-    const urlId = parts.pop() || parts.pop();
-    const teamName = decodeURIComponent(urlId);
+    const teamName = this.props.teamName;
     this.setState({ teamName });
     const userId = this.props.user.id;
     axios

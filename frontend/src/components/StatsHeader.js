@@ -58,6 +58,7 @@ const StatsHeader = () => {
         trigger={<Table.HeaderCell>FPTS</Table.HeaderCell>}
         content="NBA Fantasy Points"
       />
+      <Table.HeaderCell collapsing />
     </Table.Row>
   );
 };

@@ -107,6 +107,7 @@ class NewTeam extends Component {
       ],
       totalFantasyPts: this.state.totalFantasyPts + fantasyPts
     });
+    if(this.state.slots < 14) this.handleAddSlot();
   }
   deletePlayer(playerId, key, fantasyPts) {
     this.setState({
@@ -120,7 +121,14 @@ class NewTeam extends Component {
     this.setState({ saved: "typing", teamName: value });
 
   render() {
-    const { rows, teamName, saved, message, totalFantasyPts } = this.state;
+    const {
+      slots,
+      rows,
+      teamName,
+      saved,
+      message,
+      totalFantasyPts
+    } = this.state;
     return (
       <Container>
         <br />
@@ -129,7 +137,6 @@ class NewTeam extends Component {
         <Table celled compact definition sortable textAlign="center">
           <Table.Header fullWidth>
             <StatsHeader />
-            <Table.HeaderCell collapsing />
           </Table.Header>
           {rows}
           <Table.Footer fullWidth>
@@ -144,6 +151,7 @@ class NewTeam extends Component {
                     cursor: "pointer",
                     color: "blue"
                   }}
+                  disabled={slots > 13}
                   onClick={this.handleAddSlot}
                 >
                   <Icon name="add" />
