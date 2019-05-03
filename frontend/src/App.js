@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import "./App.css";
 import Navbar from "./components/Navbar";
+import Home from "./components/Home";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import NewTeam from "./components/NewTeam";
@@ -24,6 +25,7 @@ class App extends Component {
           <Navbar />
 
           <div>
+            <Route exact path="/home" component={Home} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <PrivateRoute

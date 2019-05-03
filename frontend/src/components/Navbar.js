@@ -40,7 +40,7 @@ class Navbar extends Component {
       <Segment inverted style={{ padding: "0 0" }} vertical>
         <Container>
           <Menu inverted size="huge">
-            <Menu.Item as={Link} to="/" header>
+            <Menu.Item as={Link} to="/home" header>
               FantasyAT
             </Menu.Item>
             {isAuthenticated ? (

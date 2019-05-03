@@ -34,7 +34,6 @@ class TeamDetails extends Component {
       const playerInfo = allPlayers.find(
         statePlayer => statePlayer.id == player._id
       );
-      console.log(playerInfo);
       const stats = playerInfo.stats;
       return (
         <Table.Row key={key}>
