@@ -85,7 +85,7 @@ router.post("/", (req, res) => {
 
 router.delete("/:teamId", (req, res) => {
   const id = req.params.teamId;
-  Team.findOne({ name: req.body.name, userId: req.body.userId })
+  Team.findOne({ _id: id })
     .then(team => {
       if (!team) {
         return res.status(400).json({
