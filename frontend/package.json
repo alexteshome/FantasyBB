@@ -20,15 +20,12 @@
     "semantic-ui-react": "^0.86.0"
   },
   "scripts": {
-    "start": "cd ../backend && node app.js",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "client": "react-scripts start",
-    "server": "cd ../backend && npm start",
-    "dev": "concurrently \"npm run server\" \"npm run start\"",
-    "client-install": "npm install",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install  && npm run build"
+    "server": "npm start --prefix ../backend",
+    "dev": "concurrently \"npm run server\" \"npm run start\""
   },
   "proxy": "http://localhost:5000",
   "eslintConfig": {
