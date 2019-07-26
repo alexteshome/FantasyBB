@@ -10,7 +10,6 @@ import NewTeam from "./components/NewTeam";
 import TeamList from "./components/TeamList";
 import TeamDetails from "./components/TeamDetails";
 import PrivateRoute from "./components/PrivateRoute";
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getPlayers } from "./actions/players";
 
