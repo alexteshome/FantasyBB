@@ -1,8 +1,16 @@
-import React, { Component } from "react";
-import NBA from "nba";
+import React from "react";
+import BasketballBackground from "../basketball-background.jpg";
 
 const Home = () => {
-  return <div />;
+  return (
+    <div>
+      <img
+        src={BasketballBackground}
+        width="100%"
+        alt="basketball-background"
+      />
+    </div>
+  );
 };
 
 export default Home;

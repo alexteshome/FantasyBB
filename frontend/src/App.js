@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, withRouter } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  withRouter,
+  Redirect,
+  Switch
+} from "react-router-dom";
 import { connect } from "react-redux";
 import "./App.css";
 import Navbar from "./components/Navbar";
@@ -23,10 +29,11 @@ class App extends Component {
         <div>
           <Navbar />
 
-          <div>
+          <Switch>
             <Route exact path="/home" component={Home} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
+
             <PrivateRoute
               exact
               authenticated={this.props.auth.isAuthenticated}
@@ -45,7 +52,8 @@ class App extends Component {
               path="/teamlist/:teamId"
               component={TeamDetails}
             />
-          </div>
+            <Route path="/" render={() => <Redirect to="/home" />} />
+          </Switch>
         </div>
       </Router>
     );
@@ -56,7 +64,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { getPlayers }
-)(withRouter(App));
+export default connect(mapStateToProps, { getPlayers })(withRouter(App));

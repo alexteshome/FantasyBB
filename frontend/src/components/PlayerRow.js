@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { Icon, Search, Table } from "semantic-ui-react";
 import { connect } from "react-redux";
@@ -52,7 +51,7 @@ class PlayerRow extends Component {
         this.state.fantasyPts,
         false
       );
-      this.state = this.initialState;
+      this.setState(this.initialState);
     }
     this.setState({ isLoading: true, value });
 

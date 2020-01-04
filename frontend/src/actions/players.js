@@ -3,9 +3,11 @@ import NBA from "nba";
 
 const fetchPlayers = async () => {
   //convert country to country code for api url
-  const players_api_call = await NBA.stats.playerStats();
+  const players_api_call = await fetch("/api/playerStats");
+  const playerStats = await players_api_call.json();
 
-  return players_api_call;
+  console.log(playerStats);
+  return playerStats.data;
 };
 
 //Asynchronous action creators, dispatches to reducer and is stored depending on action type

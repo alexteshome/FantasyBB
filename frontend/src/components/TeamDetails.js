@@ -3,7 +3,6 @@ import { Container, Table, Header } from "semantic-ui-react";
 import StatsHeader from "./StatsHeader";
 import axios from "axios";
 import { connect } from "react-redux";
-import NBA from "nba";
 
 class TeamDetails extends Component {
   constructor(props) {

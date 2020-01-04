@@ -39,12 +39,12 @@ class Navbar extends Component {
     return (
       <Segment inverted style={{ padding: "0 0" }} vertical>
         <Container>
-          <Menu inverted size="huge">
+          <Menu inverted size="massive">
             <Menu.Item as={Link} to="/home" header>
               FantasyAT
             </Menu.Item>
             {isAuthenticated ? (
-              <Menu.Item as={Link} to="/teamlist" header>
+              <Menu.Item as={Link} to="/teamlist">
                 Team List
               </Menu.Item>
             ) : (
@@ -81,7 +81,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { logoutUser }
-)(withRouter(Navbar));
+export default connect(mapStateToProps, { logoutUser })(withRouter(Navbar));

@@ -7,11 +7,6 @@ import {
   Header,
   Icon,
   Message,
-  Popup,
-  Responsive,
-  Search,
-  Segment,
-  Sidebar,
   Table
 } from "semantic-ui-react";
 import { getPlayers } from "../actions/players";
@@ -107,7 +102,7 @@ class NewTeam extends Component {
       ],
       totalFantasyPts: this.state.totalFantasyPts + fantasyPts
     });
-    if(this.state.slots < 14) this.handleAddSlot();
+    if (this.state.slots < 14) this.handleAddSlot();
   }
   deletePlayer(playerId, key, fantasyPts) {
     this.setState({
@@ -197,7 +192,4 @@ const mapStateToProps = state => {
     user: state.auth.user
   };
 };
-export default connect(
-  mapStateToProps,
-  { getPlayers }
-)(NewTeam);
+export default connect(mapStateToProps, { getPlayers })(NewTeam);

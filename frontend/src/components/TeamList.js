@@ -1,23 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import {
-  Accordion,
-  Button,
-  Confirm,
-  Container,
-  Divider,
-  Form,
-  Header,
-  Icon,
-  Message,
-  Popup,
-  Responsive,
-  Search,
-  Segment,
-  Sidebar,
-  Tab,
-  Table
-} from "semantic-ui-react";
+import { Button, Confirm, Segment, Tab, Table } from "semantic-ui-react";
 import axios from "axios";
 import { connect } from "react-redux";
 import TeamDetails from "./TeamDetails";
@@ -38,10 +20,9 @@ class TeamList extends Component {
       .get(`/api/teams/${userId}`)
       .then(res => {
         if (!res.data.teams) return;
-        console.log(res.data.teams);
+
         this.setState({
-          teams: res.data.teams,
-          clickedTeam: res.data.teams[0]._id
+          teams: res.data.teams
         });
       })
       .catch(err => {
@@ -50,14 +31,16 @@ class TeamList extends Component {
   }
 
   deleteTeam = () => {
-    const clickedTeam = this.state.teams[this.state.clickedTeam];
+    const clickedTeam = this.state.teams[this.state.clickedTeam]._id;
+    console.log(clickedTeam);
     axios
-      .delete(`/api/teams/${clickedTeam._id}`)
-      .then(res =>
+      .delete(`/api/teams/${clickedTeam}`)
+      .then(res => {
         this.setState({
-          teams: this.state.teams.filter(team => team !== clickedTeam)
-        })
-      )
+          teams: this.state.teams.filter(team => team._id !== clickedTeam)
+        });
+        console.log(this.state);
+      })
       .catch(err => {
         console.log(err.response);
       });
@@ -75,7 +58,6 @@ class TeamList extends Component {
   };
 
   show = () => {
-    console.log(this.state.clickedTeam);
     this.setState({ open: true });
   };
 
@@ -105,6 +87,13 @@ class TeamList extends Component {
               open={this.state.open}
               onCancel={this.handleCancel}
               onConfirm={this.handleConfirm}
+              style={{
+                height: "auto",
+                top: "30%",
+                left: "50%",
+
+                marginLeft: "-25%"
+              }}
             />
             <TeamDetails key={idx} teamName={team.name} />
           </Tab.Pane>

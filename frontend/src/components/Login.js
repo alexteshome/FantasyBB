@@ -33,13 +33,14 @@ class Login extends Component {
 
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/");
+      this.props.history.push("/teamlist");
     }
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log(this.props.history);
     if (nextProps.auth.isAuthenticated) {
-      this.props.history.push("/");
+      this.props.history.push("/teamlist");
     }
     if (nextProps.errors) {
       this.setState({
@@ -106,7 +107,4 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(
-  mapStateToProps,
-  { loginUser }
-)(Login);
+export default connect(mapStateToProps, { loginUser })(Login);
