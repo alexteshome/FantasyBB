@@ -30,29 +30,44 @@ class App extends Component {
           <Navbar />
 
           <Switch>
-            <Route exact path="/home" component={Home} />
-            <Route exact path="/register" component={Register} />
-            <Route exact path="/login" component={Login} />
+            <Route
+              exact
+              path={process.env.PUBLIC_URL + "/home"}
+              component={Home}
+            />
+            <Route
+              exact
+              path={process.env.PUBLIC_URL + "/register"}
+              component={Register}
+            />
+            <Route
+              exact
+              path={process.env.PUBLIC_URL + "/login"}
+              component={Login}
+            />
 
             <PrivateRoute
               exact
               authenticated={this.props.auth.isAuthenticated}
-              path="/newteam"
+              path={process.env.PUBLIC_URL + "/newteam"}
               component={NewTeam}
             />
             <PrivateRoute
               exact
               authenticated={this.props.auth.isAuthenticated}
-              path="/teamlist"
+              path={process.env.PUBLIC_URL + "/teamlist"}
               component={TeamList}
             />
             <PrivateRoute
               exact
               authenticated={this.props.auth.isAuthenticated}
-              path="/teamlist/:teamId"
+              path={process.env.PUBLIC_URL + "/teamlist/:teamId"}
               component={TeamDetails}
             />
-            <Route path="/" render={() => <Redirect to="/home" />} />
+            <Route
+              path="/"
+              render={() => <Redirect to={process.env.PUBLIC_URL + "/home"} />}
+            />
           </Switch>
         </div>
       </Router>

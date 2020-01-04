@@ -33,14 +33,14 @@ class Login extends Component {
 
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/teamlist");
+      this.props.history.push("/newteam");
     }
   }
 
   componentWillReceiveProps(nextProps) {
     console.log(this.props.history);
     if (nextProps.auth.isAuthenticated) {
-      this.props.history.push("/teamlist");
+      this.props.history.push("/newteam");
     }
     if (nextProps.errors) {
       this.setState({
